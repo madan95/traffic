@@ -1,0 +1,24 @@
+version: '3'
+services:
+  reverse-proxy:
+    image: traefik
+    command: --web --docker
+    container_name: traffic
+    ports:
+      - "80:80"
+      - "443:443"
+    labels:
+      - "traefik.enabled=true"
+      - "traefik.backend=dashboard"
+      - "traefik.frontend.rule=Host:${NETWORK_DOMAIN}.${BASE_URL}"
+      - "traefik.port=8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.toml:/traefik.toml
+      - ./acme.json:/acme.json
+    networks:
+      - traffic
+networks:
+  traffic:
+    external:
+      name: traffic
